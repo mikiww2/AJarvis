@@ -1,0 +1,6 @@
+{
+	"include": ["lambda.py"],
+	"include_dir": [],
+	"include_module_dir": [],
+	"path_module_dir": "lib/python3.6/site-packages/"
+}

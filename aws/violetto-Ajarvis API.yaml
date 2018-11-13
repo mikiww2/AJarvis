@@ -1,0 +1,660 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://vzdu38lvqb.execute-api.us-east-1.amazonaws.com/prod'
+info:
+  version: "1.0.1"
+  title: violetto-Ajarvis
+  description: API exposed by AJarvis
+tags:
+  - name: audio
+    description: Calls operating on audio files .wav
+  - name: project
+    description: Calls operating on projects
+  - name: standup
+    description: Calls operating on standups
+  - name: text
+    description: Calls operating on standup texts
+paths:
+  '/download/{standupId}':
+    get:
+      tags:
+        - audio
+      summary: retrieve a presigned url for download the audio.wav
+      description: >-
+        Return a presigned url of the standup audio identified by standupId. The
+        url is valid for 3600 seconds, 1 hour. StandupId use the format
+        YYYY-mm-ddTHH-MM-SS, where Y are years, m are months, d are days, H are
+        hours, M are minutes and S are seconds.
+      parameters:
+        - name: sub-user
+          in: header
+          description: 'webapp user, if the webapp use it'
+          required: false
+          schema:
+            type: string
+        - name: standupId
+          in: path
+          description: 'id of the standup, use the format YYYY-mm-ddTHH-MM-SS'
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: >-
+            basic autentication toker, require a valid username and password and
+            send a BasicAuth
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: json with the key download_url contains a presigned url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadResponse'
+        '400':
+          description: standup with identier standupId doesn't exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: bad Authorization token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - violetto-Ajarvis-authorizer: []
+      x-amazon-apigateway-integration:
+        uri: >-
+          arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:028200797651:function:violetto-Ajarvis-download-audio/invocations
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+  /project/all:
+    get:
+      tags:
+        - project
+      summary: retrieve an array of projects
+      description: >-
+        Retrieve an array with all the projects order by the most recent standup
+        of each project. Each project will have it's own standup order by the
+        most recent to the oldest.
+      parameters:
+        - name: sub-user
+          in: header
+          description: 'webapp user, if the webapp use it'
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: >-
+            basic autentication toker, require a valid username and password and
+            send a BasicAuth
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: json with the array of projects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectsResponse'
+        '401':
+          description: bad Authorization token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - violetto-Ajarvis-authorizer: []
+      x-amazon-apigateway-integration:
+        uri: >-
+          arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:028200797651:function:violetto-Ajarvis-project/invocations
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+  /standup/retrieve:
+    post:
+      tags:
+        - standup
+      summary: retrieve a standup
+      description: >-
+        Retrieve a standup with id in post. With the post you can also limit the
+        attributes retrieved.
+      parameters:
+        - name: sub-user
+          in: header
+          description: 'webapp user, if the webapp use it'
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: >-
+            basic autentication toker, require a valid username and password and
+            send a BasicAuth
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: json of the standups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveResponse'
+        '400':
+          description: bad standupId or post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: bad Authorization token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - violetto-Ajarvis-authorizer: []
+      x-amazon-apigateway-integration:
+        uri: >-
+          arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:028200797651:function:violetto-Ajarvis-retrieve/invocations
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrievePost'
+        description: json with standupId and other information
+        required: true
+  '/standup/retrieve/{range}':
+    post:
+      tags:
+        - standup
+      summary: retrieve an array of one or more standups limit by range
+      description: >-
+        Retrieve an array with one or more standups order by reversed creation
+        date and time. With range and post you can limit the search and the
+        attribute retrieved.
+      parameters:
+        - name: sub-user
+          in: header
+          description: 'webapp user, if the webapp use it'
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: >-
+            basic autentication toker, require a valid username and password and
+            send a BasicAuth
+          required: true
+          schema:
+            type: string
+        - name: range
+          in: path
+          description: 'limit the search range, allowed value are ALL, ONE or DAY'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: json with the array of one or more standups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveResponse'
+        '400':
+          description: bad standupId or post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: bad Authorization token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - violetto-Ajarvis-authorizer: []
+      x-amazon-apigateway-integration:
+        uri: >-
+          arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:028200797651:function:violetto-Ajarvis-retrieve/invocations
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrievePost'
+        description: json with the information required to retrieve one or more standups
+        required: true
+  /upload/link:
+    get:
+      tags:
+        - audio
+      summary: retrieve a presigned url for upload a audio.wav
+      description: >-
+        Return a presigned url for uploading the standup audio on s3 data
+        storage. The url is valid for 3600 seconds, 1 hour.
+      parameters:
+        - name: sub-user
+          in: header
+          description: 'webapp user, if the webapp use it'
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: >-
+            basic autentication toker, require a valid username and password and
+            send a BasicAuth
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: json with the key upload_url contains a presigned url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        '401':
+          description: bad Authorization token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - violetto-Ajarvis-authorizer: []
+      x-amazon-apigateway-request-validator: 'Validate body, query string parameters, and headers'
+      x-amazon-apigateway-integration:
+        uri: >-
+          arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:028200797651:function:violetto-Ajarvis-upload/invocations
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+  /upload/text:
+    post:
+      tags:
+        - text
+      summary: upload a standup transcription
+      description: >-
+        Upload a standup text containing the transcription or the standup
+        meeting.
+      parameters:
+        - name: sub-user
+          in: header
+          description: 'webapp user, if the webapp use it'
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: >-
+            basic autentication toker, require a valid username and password and
+            send a BasicAuth
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: upload successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+        '400':
+          description: bad json or error occured when uploading on s3
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: bad Authorization token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - violetto-Ajarvis-authorizer: []
+      x-amazon-apigateway-integration:
+        uri: >-
+          arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:028200797651:function:violetto-Ajarvis-upload-text/invocations
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+      requestBody:
+        content:
+          application/post:
+            schema:
+              $ref: '#/components/schemas/UploadTextPost'
+        description: json with the key standup contains a standup transcription text
+        required: true
+x-amazon-apigateway-request-validators:
+  'Validate body, query string parameters, and headers':
+    validateRequestParameters: true
+    validateRequestBody: true
+components:
+  schemas:
+    Tags:
+      type: array
+      items:
+        type: string
+      title: Tags Schema
+    ProjectsResponse:
+      type: object
+      required:
+        - projects
+      properties:
+        projects:
+          description: array of project
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+      title: ProjectsResponse Schema
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: contains useful information of the error occured
+          example: Unauthorized
+          type: string
+      title: Error Schema
+    UploadTextPost:
+      type: object
+      required:
+        - standup
+      properties:
+        standup:
+          description: contains text of the standup
+          example: Project name ...
+          type: string
+      title: UploadTextPost Schema
+    DownloadResponse:
+      type: object
+      required:
+        - download_url
+      properties:
+        download_url:
+          description: contains a presigned url from s3
+          example: >-
+            https://violetto-stage.s3.amazonaws.com/upload/AjarvisWebApp/admin/2018-03-13T08-39-46.wav?AWSAccessKeyId=...
+          type: string
+      title: DownloadResponse Schema
+    Project:
+      type: object
+      required:
+        - name
+        - standups
+      properties:
+        name:
+          description: project name
+          example: Manhattan
+          type: string
+        standups:
+          description: array of one or more standups
+          type: array
+          items:
+            $ref: '#/components/schemas/StandupProject'
+      title: Project Schema
+    UploadResponse:
+      type: object
+      required:
+        - upload_url
+      properties:
+        upload_url:
+          description: contains a presigned url from s3
+          example: >-
+            https://violetto-stage.s3.amazonaws.com/upload/AjarvisWebApp/admin/2018-03-13T08-39-46.wav?AWSAccessKeyId=...
+          type: string
+      title: UploadResponse Schema
+    Empty:
+      type: object
+      title: Empty Schema
+    RetrieveResponse:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          description: array of zero or more standups
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/Standup'
+            - $ref: '#/components/schemas/StandupTranscribeError'
+      title: RetrieveResponse Schema
+    StandupTranscribeError:
+      type: object
+      required:
+        - failureReason
+        - id
+        - source
+        - status
+      properties:
+        id:
+          description: >-
+            standup identifier, use the format YYYY-mm-ddTHH-MM-SS where Y are
+            years, m are months, d are days, H are hours, M are minutes and S
+            are seconds.
+          example: 2018-03-28T15-20-46
+          type: string
+        status:
+          description: status of the transcription
+          type: string
+          enum:
+            - VOICE-TO-TEXT FAILED
+        source:
+          description: source of the transcription
+          type: string
+          enum:
+            - audio
+        failureReason:
+          description: message from Amazon Transcribe service explain why it have failed
+          type: string
+      title: StandupTranscribeError Schema
+    StandupProjectSection:
+      type: array
+      items:
+        type: object
+        properties:
+          tags:
+            $ref: '#/components/schemas/Tags'
+        required:
+          - tags
+      title: StandupProjectSection Schema
+    StandupSection:
+      allOf:
+        - $ref: '#/components/schemas/StandupProjectSection'
+        - type: array
+          items:
+            type: object
+            properties:
+              sentence:
+                description: phrase where the tags are located
+                example: yesterday i ...
+                type: string
+            required:
+              - sentence
+      title: StandupSection Schema
+    Standup:
+      type: object
+      required:
+        - id
+        - source
+        - status
+      properties:
+        id:
+          description: >-
+            standup identifier, use the format YYYY-mm-ddTHH-MM-SS where Y are
+            years, m are months, d are days, H are hours, M are minutes and S
+            are seconds.
+          example: 2018-03-28T15-20-46
+          type: string
+        person:
+          description: person name
+          example: mario
+          type: string
+        project:
+          description: project name
+          example: manhattan
+          type: string
+        status:
+          description: status of the transcription
+          type: string
+          enum:
+            - VOICE-TO-TEXT COMPLETED
+            - COMPREHEND COMPLETED
+        source:
+          description: source of the transcription
+          type: string
+          enum:
+            - text
+            - audio
+        text:
+          description: text of the standup meeting
+          example: Project name ...
+          type: string
+        yesterday:
+          $ref: '#/components/schemas/StandupSection'
+        today:
+          $ref: '#/components/schemas/StandupSection'
+        issue:
+          description: array of issue sections
+          allOf:
+            - $ref: '#/components/schemas/StandupSection'
+            - type: array
+              items:
+                type: object
+                properties:
+                  valutation:
+                    description: valutation of the issue
+                    type: string
+                    enum:
+                      - NEUTRAL
+                      - POSITIVE
+                      - NEGATIVE
+                required:
+                  - valutation
+        duration:
+          description: array of duration sections
+          allOf:
+            - $ref: '#/components/schemas/StandupSection'
+            - type: array
+              items:
+                type: object
+                properties:
+                  valutation:
+                    $ref: '#/components/schemas/Tags'
+      title: Standup Schema
+    StandupProject:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: >-
+            standup identifier, use the format YYYY-mm-ddTHH-MM-SS where Y are
+            years, m are months, d are days, H are hours, M are minutes and S
+            are seconds.
+          example: 2018-03-28T15-20-46
+          type: string
+        person:
+          description: person name
+          example: mario
+          type: string
+        yesterday:
+          $ref: '#/components/schemas/StandupProjectSection'
+        today:
+          $ref: '#/components/schemas/StandupProjectSection'
+        issue:
+          description: array of issue sections
+          allOf:
+            - $ref: '#/components/schemas/StandupProjectSection'
+            - type: array
+              items:
+                type: object
+                properties:
+                  valutation:
+                    description: valutation of the issue
+                    type: string
+                    enum:
+                      - NEUTRAL
+                      - POSITIVE
+                      - NEGATIVE
+                required:
+                  - valutation
+        duration:
+          description: array of duration sections
+          allOf:
+            - $ref: '#/components/schemas/StandupProjectSection'
+            - type: array
+              items:
+                type: object
+                properties:
+                  valutation:
+                    $ref: '#/components/schemas/Tags'
+      title: StandupProject Schema
+    RetrievePost:
+      type: object
+      properties:
+        show:
+          description: array of attributes of the standup that will be retrieved
+          type: array
+          items:
+            type: string
+        id:
+          description: Standup identifier if you want to retrieve only one standup
+          example: 2018-03-28T15-20-46
+          type: string
+      required:
+        - show
+      title: RetrievePost Schema
+  securitySchemes:
+    violetto-Ajarvis-authorizer:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-amazon-apigateway-authtype: custom
+      x-amazon-apigateway-authorizer:
+        authorizerUri: >-
+          arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:028200797651:function:violetto-Ajarvis-authorizer/invocations
+        authorizerResultTtlInSeconds: 1
+        type: token

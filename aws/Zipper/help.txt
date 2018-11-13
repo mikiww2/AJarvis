@@ -1,0 +1,15 @@
+#### create new lambda ####
+copy and rename Lambda with your-Lambda-name
+python3 -m venv your-Lambda-name
+cd  your-Lambda-name
+source bin/activate
+
+## do your work
+pip freeze > requirements.txt
+
+#update config_zip.json if you add test module or else that don't need to be zip
+python3 zip.py
+
+zipinfo lambda.zip
+
+#use lambda.zip on aws Lambda
