@@ -1,0 +1,93 @@
+{% set title = "Dettagli standup" %}
+{% set recorder, list = true, true %}
+{% extends "partials/base.html" %}
+{% block body %}
+<div class="container">
+	<div class="list-group text-center">
+{% if 'failureReason' in item %}
+		<p class="list-group-item">Standup del {{ item['date'] }}</p>
+		<p class="list-group-item">Conversione parlato a testo fallita; motivo: {{ item['failureReason'] }}</p>
+{% else %}
+{% if item['status'] == 'VOICE-TO-TEXT COMPLETED' %}
+		<p class="list-group-item">Conversione parlato a testo completata, analisi del testo in corso</p>
+		<p class="list-group-item">Standup del {{ item['date'] }}, nessuna informazione disponibile al momento</p>
+{% else %}
+		<p class="list-group-item">Conversione parlato a testo completata, analisi del testo completata</p>
+		<p class="list-group-item">Standup del {{ item['date'] }} 
+{% if 'project' not in item and 'person' not in item and 'yesterday' not in item and 'today' not in item and 'issue' not in item and 'duration' not in item %}
+		nessuna informazione disponibile al momento</p>
+{% endif %}
+{% if 'project' in item %}
+		del progetto <span class="text-capitalize">{{ item['project'] }}</span> 
+{% endif %}
+{% if 'person' in item %}
+		di <span class="text-capitalize">{{ item['person'] }}</span>
+{% endif %}
+		</p>
+{% if item['source'] == 'audio' %}
+		<p class="list-group-item">Fonte: registrazione audio <button type="button" class="btn btn-primary" value="{{ item['id'] }}" onclick="download_audio_clicked(this);">Scarica audio</button></p>
+{% elif item['source'] == 'text' %}
+		<p class="list-group-item">Fonte: testo inserito manualmente</p>
+{% endif %}
+{% if 'text' in item %}
+		<p class="list-group-item">Testo originale: <span class="font-italic">{{ item['text'] }}</span></p>
+{% endif %}
+{% if 'yesterday' in item %}
+		<div class="list-group-item">
+{% for sentence in item['yesterday'] %}
+			<p>Dalla frase: <span class="font-italic">{{ sentence['sentence'] }}</span> ho ricavato che ho fatto: <span class="font-weight-bold">{{ sentence['tags'] }}</span></p>
+{% endfor %}
+		</div>
+{% endif %}
+{% if 'today' in item %}
+		<div class="list-group-item">
+{% for sentence in item['today'] %}
+			<p>Dalla frase: <span class="font-italic">{{ sentence['sentence'] }}</span> ho ricavato che oggi farò: <span class="font-weight-bold">{{ sentence['tags'] }}</span></p>
+{% endfor %}
+		</div>
+{% endif %}
+{% if 'issue' in item %}
+		<div class="list-group-item">
+{% for sentence in item['issue'] %}
+			<p>Dalla frase: <span class="font-italic">{{ sentence['sentence'] }}</span> ho ricavato che 
+{% if sentence['valutation'] == 'POSITIVE' and not sentence['tags'] %}
+			non c'é nessun problema
+{% elif sentence['valutation'] == 'NEUTRAL' %}
+			potrebbe esserci un problema 
+{% if sentence['tags'] %}
+			con : <span class="font-weight-bold">{{ sentence['tags'] }}</span>
+{% endif %}
+{% elif sentence['tags'] %}
+			c'é un problema 
+{% if sentence['tags'] %}
+			con : <span class="font-weight-bold">{{ sentence['tags'] }}</span>
+{% endif %}
+{% if sentence['valutation'] == 'POSITIVE' %}
+			, ma è stato risolto
+{% endif %}
+{% endif %}
+			</p>
+{% endfor %}
+		</div>
+{% endif %}
+{% if 'duration' in item %}
+		<div class="list-group-item">
+{% for sentence in item['duration'] %}
+			<p>Dalla frase: <span class="font-italic">{{ sentence['sentence'] }}</span> ho ricavato <span class="font-weight-bold">{{ sentence['tags'] }}</span> con durata 
+{% if 'valutation' in sentence %}
+			{{ sentence['validation'] }}
+{% else %}
+			indefinita
+{% endif %}
+			</p>
+{% endfor %}
+		</div>
+{% endif %}
+{% endif %}
+{% endif %}
+	</div>
+</div>
+{% endblock %}
+{% block javascript %}
+    	<script src="{{ url_for('static', filename='scripts/download_audio.js') }}"></script>
+{% endblock %}

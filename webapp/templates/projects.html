@@ -1,0 +1,51 @@
+{% set title = "Progetti" %}
+{% set recorder = true %}
+{% extends "partials/base.html" %}
+{% block body %}
+<div class="container">
+	<div class="list-group text-center">
+{% if not projects %}
+		<p class="list-group-item">nessun progetto recente</p>
+{% else %}
+{% for project in projects %}
+		<div class="list-group-item">
+			<p>progetto <span class="text-capitalize font-weight-bold">{{ project['name'] }}</span></p>
+			<div class="list-group text-center">
+				<p>Standup analizzate</p>
+{% for standup in project['standups'] %}
+				<div class="list-group-item">
+					<p>standup del {{ standup['date'] }}
+{% if 'person' in standup %}
+						registrata da <span class="text-capitalize">{{ standup['person'] }}</span>
+{% endif %}
+					</p>
+{% if 'yesterday' in standup %}
+					<p>Ho fatto : <span class="font-weight-bold">{{ standup['yesterday'] }}</span></p>
+{% endif %}
+{% if 'today' in standup %}
+					<p>Oggi farò : <span class="font-weight-bold">{{ standup['today'] }}</span></p>
+{% endif %}
+{% if 'issue' in standup %}
+{% for sentence in standup['issue'] %}
+					<p class="text-{{ sentence['valutation'] }}">Stato problemi
+{% if sentence['tags'] %}	
+					: <span class="font-weight-bold">{{ sentence['tags'] }}</span>
+{% endif %}
+					</p>
+{% endfor %}
+{% endif %}
+{% if 'duration' in standup %}
+{% for sentence in standup['duration'] %}
+					<p>Tempistiche per <span class="font-weight-bold">{{ sentence['tags'] }}</span>: <span class="font-weight-bold">{{ sentence['valutation'] }}</span></p>
+{% endfor %}
+{% endif %}
+					<a class="btn btn-primary" href="{{ url_for('show_detail', id_standup=standup['id']) }}">Dettagli standup</a>
+				</div>
+{% endfor %}
+			</div>
+		</div>
+{% endfor %}
+{% endif %}
+	</div>
+</div>
+{% endblock %}

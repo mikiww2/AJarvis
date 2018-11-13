@@ -1,0 +1,16 @@
+{% set title = "Lista" %}
+{% set recorder = true %}
+{% extends "partials/base.html" %}
+{% block body %}
+<div class="container">
+	<div class="list-group text-center">
+{% if not items %}
+		<p class="list-group-item">nessun audio recente</p>
+{% else %}
+{% for item in items %}
+		<a class="list-group-item" href="{{ url_for('show_detail', id_standup=item['id']) }}">audio {{ item['id'] }}: {{ item['status'] }}</a>
+{% endfor %}
+{% endif %}
+	</div>
+</div>
+{% endblock %}

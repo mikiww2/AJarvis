@@ -1,0 +1,10 @@
+{% set title = "Ops" %}
+{% set recorder, list = true, true %}
+{% extends "partials/base.html" %}
+{% block body %}
+<div class="container">
+	<h1 class="text-uppercase">Perché sono quì?</h1>
+	<span>{{ error }}</span>
+	<p><a href="{{ url_for('index') }}">Torna alla pagina iniziale</a></p>
+</div>
+{% endblock %}

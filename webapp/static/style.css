@@ -1,0 +1,122 @@
+html, body {
+  height: 100%;
+}
+
+h1 {
+  color: #18BC9C;
+} 
+
+.customhead {
+  padding-bottom: 30px;
+  padding-top: calc(70px + 72px);
+}
+
+#uploadProgressBar {
+  width: 0%;
+  height: 20px;
+}
+
+#loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #007bff; /* Blue */
+
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/*
+.block-recorder {
+  min-height: 40%;
+}
+
+.timer {
+  height: 30%;
+}
+
+.loadingProgressBar {
+  height:100%;
+}
+
+.uploadProgressBar{
+  width: 0%;
+}
+
+77777777777777
+
+body{
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  text-shadow: 0 1px 0px rgb(255, 255, 255);
+  margin: 0px;
+  padding: 10px;
+  font-family:sans-serif;
+}
+
+.display{
+  font-size: 60px;
+  padding: 0 !important;
+}
+.display>span{
+  font-weight: bold;
+}
+.well{
+  border-radius: 0 !important;
+  font-size: 13px !important;
+  padding: 0 !important;
+}
+
+7777777777777777
+
+* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+ Style the top navigation bar 
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+}
+
+ Style the topnav links 
+.topnav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+ Change color on hover 
+.topnav a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+ Style the content 
+.content {
+    background-color: #ddd;
+    padding: 10px;
+    height: 200px;  Should be removed. Only for demonstration 
+}
+
+ Style the footer 
+.footer {
+    background-color: #f1f1f1;
+    padding: 10px;
+}
+*/

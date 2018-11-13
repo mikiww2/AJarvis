@@ -1,0 +1,48 @@
+#### install ####
+python3 -m venv Ajarvis-webapp
+cd Ajarvis-webapp
+pip install requirements.txt
+
+
+#### deploy ####
+pip install requirements.deploy.txt
+
+#add to bin/activate at the end
+export AWS_ACCESS_KEY_ID=here aws access key
+export AWS_SECRET_ACCESS_KEY=here aws secret access key
+export AWS_DEFAULT_REGION=us-west-1
+
+#need webapp-ajarvis.pem
+chmod 400 webapp-ajarvis.pem
+
+
+#### connect ec2 ####
+sudo ssh -i webapp-ajarvis.pem ubuntu@ec2-54-173-198-103.compute-1.amazonaws.com
+
+
+#### use ####
+source bin/activate
+deactivate
+
+
+#### on ssh ec2 ####
+apt-get update && apt-get upgrade
+python3 -m venv Ajarvis-webapp
+cd Ajarvis-webapp
+source bin/activate && pip install --upgrade pip
+pip install -r requirements.txt
+scp -i webapp-ajarvis.pem -r config/ ubuntu@ip:Ajarvis-webapp/config/
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.key -out cert.crt
+
+# with nano set host = 0.0.0.0 and port = 80
+
+
+#### connect webapp ####
+https://54.173.198.103/
+
+
+#### restart #### 
+ps -ef | grep <process-id>
+kill -9 <process-id>
+#sudo python3 -OO run.py >> log.txt 2>&1 &
+python3 -OO run.py  &

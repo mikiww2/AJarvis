@@ -1,0 +1,5 @@
+{
+	"path": "https://codeapi.execute-api.region.amazonaws.com/stage",
+	"username": "username",
+	"password": "password"
+}

@@ -1,0 +1,11 @@
+{% set title = Home %}
+{% set recorder, list = true, true %}
+{% extends "partials/base.html" %}
+{% block body %}
+<div class="container">
+	<h1 class="text-uppercase">Cos'è Ajarvis?</h1>
+	<p>Ajarvist è un servizio che permette di registrare l'audio di una standup, convertirlo in testo e successivamente analizzarlo per estrarre informazioni sull'andamento del progetto.</p>
+	<p>In quanto la conversione audio a testo offerta da Amazon Transcribe è ancora inaffidabile viene offerta l'opzione di inserire direttamente una trascrizione della standup da analizzare</p>
+	<p><a class="btn btn-primary" href="{{ url_for('upload_text') }}" role="button">Trascrizione standup</a></p>
+</div>
+{% endblock %}
