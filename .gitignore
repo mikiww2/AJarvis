@@ -102,3 +102,22 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+
+
+
+
+## config
+webapp/config/auth.json
+webapp/config/authAJarvis.json
+
+## run
+webapp/static/scripts/base.js
+webapp/static/scripts/base.min.js
+webapp/static/scripts/multi.js
+webapp/static/scripts/multi.min.js
+
+## ec2
+webapp/webapp-ajarvis.pem
+webapp/key.key
+webapp/cert.crt
